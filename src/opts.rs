@@ -1,4 +1,4 @@
-use clap::{App, Arg, ArgAction};
+use clap::{Arg, ArgAction, Command};
 use std::env;
 
 use crate::cookies::Cookie;
@@ -48,99 +48,219 @@ const ENV_VAR_TERM: &str = "TERM";
 
 impl Options {
     pub fn from_args() -> Options {
-        let app = App::new(env!("CARGO_PKG_NAME"))
+        let about = format!("{}\n{}", ASCII, env!("CARGO_PKG_DESCRIPTION"));
+        let app = Command::new(env!("CARGO_PKG_NAME"))
             .version(env!("CARGO_PKG_VERSION"))
-            .author(format!("\n{}\n\n", env!("CARGO_PKG_AUTHORS").replace(':', "\n")).as_str())
-            .about(format!("{}\n{}", ASCII, env!("CARGO_PKG_DESCRIPTION")).as_str())
-            .args_from_usage("-a, --no-audio 'Remove audio sources'")
-            .args_from_usage("-b, --base-url=[http://localhost/] 'Set custom base URL'")
-            .args_from_usage(
-                "-B, --blacklist-domains 'Treat list of specified domains as blacklist'",
-            )
-            .args_from_usage("-c, --no-css 'Remove CSS'")
-            .args_from_usage("-C, --cookies=[cookies.txt] 'Specify cookie file'")
+            .author("sandip.dey1988 <sandip.dey1988@gmail>")
+            .about(&about)
             .arg(
-                Arg::with_name("domains")
+                Arg::new("no-audio")
+                    .short('a')
+                    .long("--no-audio")
+                    .action(ArgAction::SetTrue)
+                    .help("Remove audio sources"),
+            )
+            .arg(
+                Arg::new("base-url")
+                    .short('b')
+                    .long("base-url")
+                    .default_value("[http://localhost/]")
+                    .help("Set custom base URL"),
+            )
+            .arg(
+                Arg::new("blacklist-domains")
+                    .short('B')
+                    .long("blacklist-domains")
+                    .action(ArgAction::SetTrue)
+                    .help("Treat list of specified domains as blacklist"),
+            )
+            .arg(
+                Arg::new("no-css")
+                    .short('c')
+                    .long("no-css")
+                    .action(ArgAction::SetTrue)
+                    .help("Remove CSS"),
+            )
+            .arg(
+                Arg::new("ignore-errors")
+                    .short('e')
+                    .long("ignore-errors")
+                    .action(ArgAction::SetTrue)
+                    .help("Ignore network errors"),
+            )
+            .arg(
+                Arg::new("no-frames")
+                    .short('f')
+                    .long("no-frames")
+                    .action(ArgAction::SetTrue)
+                    .help("Remove frames and iframes"),
+            )
+            .arg(
+                Arg::new("no-fonts")
+                    .short('F')
+                    .long("no-fonts")
+                    .action(ArgAction::SetTrue)
+                    .help("Remove fonts"),
+            )
+            .arg(
+                Arg::new("no-images")
+                    .short('i')
+                    .long("no-images")
+                    .action(ArgAction::SetTrue)
+                    .help("Remove images"),
+            )
+            .arg(
+                Arg::new("isolate")
+                    .short('I')
+                    .long("isolate")
+                    .action(ArgAction::SetTrue)
+                    .help("Cut off document from the Internet"),
+            )
+            .arg(
+                Arg::new("no-js")
+                    .short('j')
+                    .long("no-js")
+                    .action(ArgAction::SetTrue)
+                    .help("Remove JavaScript"),
+            )
+            .arg(
+                Arg::new("insecure")
+                    .short('k')
+                    .long("insecure")
+                    .action(ArgAction::SetTrue)
+                    .help("Allow invalid X.509 (TLS) certificates"),
+            )
+            .arg(
+                Arg::new("no-metadata")
+                    .short('M')
+                    .long("no-metadata")
+                    .action(ArgAction::SetTrue)
+                    .help("Exclude timestamp and source information"),
+            )
+            .arg(
+                Arg::new("unwrap-noscript")
+                    .short('n')
+                    .long("unwrap-noscript")
+                    .action(ArgAction::SetTrue)
+                    .help("Replace NOSCRIPT elements with their contents"),
+            )
+            .arg(
+                Arg::new("silent")
+                    .short('s')
+                    .long("silent")
+                    .action(ArgAction::SetTrue)
+                    .help("Suppress verbosity"),
+            )
+            .arg(
+                Arg::new("no-video")
+                    .short('v')
+                    .long("no-video")
+                    .action(ArgAction::SetTrue)
+                    .help("Remove video sources"),
+            )
+            .arg(
+                Arg::new("domains")
                     .short('d')
                     .long("domain")
-                    .takes_value(true)
+                    .action(ArgAction::Set)
                     .value_name("example.com")
                     .action(ArgAction::Append)
                     .help("Specify domains to use for white/black-listing"),
             )
-            .args_from_usage("-e, --ignore-errors 'Ignore network errors'")
-            .args_from_usage("-E, --encoding=[UTF-8] 'Enforce custom charset'")
-            .args_from_usage("-f, --no-frames 'Remove frames and iframes'")
-            .args_from_usage("-F, --no-fonts 'Remove fonts'")
-            .args_from_usage("-i, --no-images 'Remove images'")
-            .args_from_usage("-I, --isolate 'Cut off document from the Internet'")
-            .args_from_usage("-j, --no-js 'Remove JavaScript'")
-            .args_from_usage("-k, --insecure 'Allow invalid X.509 (TLS) certificates'")
-            .args_from_usage("-M, --no-metadata 'Exclude timestamp and source information'")
-            .args_from_usage(
-                "-n, --unwrap-noscript 'Replace NOSCRIPT elements with their contents'",
-            )
-            .args_from_usage(
-                "-o, --output=[document.html] 'Write output to <file>, use - for STDOUT'",
-            )
-            .args_from_usage("-s, --silent 'Suppress verbosity'")
-            .args_from_usage("-t, --timeout=[60] 'Adjust network request timeout'")
-            .args_from_usage("-u, --user-agent=[Firefox] 'Set custom User-Agent string'")
-            .args_from_usage("-v, --no-video 'Remove video sources'")
             .arg(
-                Arg::with_name("target")
+                Arg::new("target")
                     .required(true)
-                    .takes_value(true)
+                    .action(ArgAction::Set)
                     .index(1)
                     .help("URL or file path, use - for STDIN"),
+            )
+            .arg(
+                Arg::new("cookies")
+                    .short('C')
+                    .long("cookies")
+                    .default_value("[cookies.txt]")
+                    .help("Specify cookie file"),
+            )
+            .arg(
+                Arg::new("encoding")
+                    .short('E')
+                    .long("encoding")
+                    .default_value("[UTF-8]")
+                    .help("Enforce custom charset"),
+            )
+            .arg(
+                Arg::new("timeout")
+                    .short('t')
+                    .long("timeout")
+                    .default_value("[60]")
+                    .help("Adjust network request timeout"),
+            )
+            .arg(
+                Arg::new("user-agent")
+                    .short('u')
+                    .long("user-agent")
+                    .default_value("[Firefox]")
+                    .help("Set custom User-Agent string"),
+            )
+            .arg(
+                Arg::new("output")
+                    .short('o')
+                    .long("output")
+                    .default_value("[document.html]")
+                    .help("Write output to <file>, use - for STDOUT"),
             )
             .get_matches();
         let mut options: Options = Options::default();
 
         // Process the command
         options.target = app
-            .value_of("target")
+            .get_one::<String>("target")
             .expect("please set target")
             .to_string();
-        options.no_audio = app.is_present("no-audio");
-        if let Some(base_url) = app.value_of("base-url") {
+        
+        options.no_audio = app.get_flag("no-audio");
+        options.blacklist_domains = app.get_flag("blacklist-domains");
+        options.no_css = app.get_flag("no-css");
+        options.ignore_errors = app.get_flag("ignore-errors");
+        options.no_frames = app.get_flag("no-frames");
+        options.no_fonts = app.get_flag("no-fonts");
+        options.no_images = app.get_flag("no-images");
+        options.isolate = app.get_flag("isolate");
+        options.no_js = app.get_flag("no-js");
+        options.insecure = app.get_flag("insecure");
+        options.no_metadata = app.get_flag("no-metadata");
+        options.silent = app.get_flag("silent");
+        options.unwrap_noscript = app.get_flag("unwrap-noscript");
+        options.no_video = app.get_flag("no-video");
+        options.output = app
+            .get_one::<String>("output")
+            .unwrap_or(&"".to_string())
+            .to_string();
+        options.timeout = app
+            .get_one::<String>("timeout")
+            .unwrap_or(&DEFAULT_NETWORK_TIMEOUT.to_string())
+            .parse::<u64>()
+            .unwrap();
+
+        if let Some(base_url) = app.get_one::<String>("base-url") {
             options.base_url = Some(base_url.to_string());
         }
-        options.blacklist_domains = app.is_present("blacklist-domains");
-        options.no_css = app.is_present("no-css");
-        if let Some(cookie_file) = app.value_of("cookies") {
+        if let Some(cookie_file) = app.get_one::<String>("cookies") {
             options.cookie_file = Some(cookie_file.to_string());
         }
-        if let Some(encoding) = app.value_of("encoding") {
+        if let Some(encoding) = app.get_one::<String>("encoding") {
             options.encoding = Some(encoding.to_string());
         }
         if let Some(domains) = app.get_many::<String>("domains") {
             let list_of_domains: Vec<String> = domains.map(|v| v.clone()).collect::<Vec<_>>();
             options.domains = Some(list_of_domains);
         }
-        options.ignore_errors = app.is_present("ignore-errors");
-        options.no_frames = app.is_present("no-frames");
-        options.no_fonts = app.is_present("no-fonts");
-        options.no_images = app.is_present("no-images");
-        options.isolate = app.is_present("isolate");
-        options.no_js = app.is_present("no-js");
-        options.insecure = app.is_present("insecure");
-        options.no_metadata = app.is_present("no-metadata");
-        options.output = app.value_of("output").unwrap_or("").to_string();
-        options.silent = app.is_present("silent");
-        options.timeout = app
-            .value_of("timeout")
-            .unwrap_or(&DEFAULT_NETWORK_TIMEOUT.to_string())
-            .parse::<u64>()
-            .unwrap();
-        if let Some(user_agent) = app.value_of("user-agent") {
+        if let Some(user_agent) = app.get_one::<String>("user-agent") {
             options.user_agent = Some(user_agent.to_string());
         } else {
             options.user_agent = Some(DEFAULT_USER_AGENT.to_string());
         }
-        options.unwrap_noscript = app.is_present("unwrap-noscript");
-        options.no_video = app.is_present("no-video");
-
+        
         options.no_color =
             env::var_os(ENV_VAR_NO_COLOR).is_some() || atty::isnt(atty::Stream::Stderr);
         if let Some(term) = env::var_os(ENV_VAR_TERM) {
