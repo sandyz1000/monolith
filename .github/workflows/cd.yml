@@ -20,7 +20,7 @@ jobs:
     - name: Build the executable
       run: cargo build --release
 
-    - uses: Shopify/upload-to-release@2.0.0
+    - uses: Shopify/upload-to-release@v2.0.0
       with:
         name: monolith.exe
         path: target\release\monolith.exe
@@ -36,7 +36,7 @@ jobs:
       run: |
         sudo mkdir /cross-build
         sudo touch /etc/apt/sources.list.d/armhf.list
-        echo "deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic main" | sudo tee -a /etc/apt/sources.list.d/armhf.list
+        echo "deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ focal main" | sudo tee -a /etc/apt/sources.list.d/armhf.list
         sudo apt-get update
         sudo apt-get install -y gcc-arm-linux-gnueabihf libc6-armhf-cross libc6-dev-armhf-cross
         sudo apt-get download libssl1.1:armhf libssl-dev:armhf
@@ -53,7 +53,7 @@ jobs:
       run: cargo build --release --target=arm-unknown-linux-gnueabihf
 
     - name: Attach artifact to the release
-      uses: Shopify/upload-to-release@2.0.0
+      uses: Shopify/upload-to-release@v2.0.0
       with:
         name: monolith-gnu-linux-armhf
         path: target/arm-unknown-linux-gnueabihf/release/monolith
@@ -69,7 +69,7 @@ jobs:
       run: |
         sudo mkdir /cross-build
         sudo touch /etc/apt/sources.list.d/arm64.list
-        echo "deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ bionic main" | sudo tee -a /etc/apt/sources.list.d/arm64.list
+        echo "deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ focal main" | sudo tee -a /etc/apt/sources.list.d/arm64.list
         sudo apt-get update
         sudo apt-get install -y gcc-aarch64-linux-gnu libc6-arm64-cross libc6-dev-arm64-cross
         sudo apt-get download libssl1.1:arm64 libssl-dev:arm64
@@ -86,7 +86,7 @@ jobs:
       run: cargo build --release --target=aarch64-unknown-linux-gnu
 
     - name: Attach artifact to the release
-      uses: Shopify/upload-to-release@2.0.0
+      uses: Shopify/upload-to-release@v2.0.0
       with:
         name: monolith-gnu-linux-aarch64
         path: target/aarch64-unknown-linux-gnu/release/monolith
@@ -101,7 +101,7 @@ jobs:
     - name: Build the executable
       run: cargo build --release
 
-    - uses: Shopify/upload-to-release@2.0.0
+    - uses: Shopify/upload-to-release@v2.0.0
       with:
         name: monolith-gnu-linux-x86_64
         path: target/release/monolith
